@@ -111,5 +111,7 @@ if st.button("Calcular IMC"):
 # Botão de Reset para reiniciar o formulário
 if st.button("Reiniciar"):
     st.session_state['calculado'] = False
+    peso = 0
+    altura = 0
 
 
