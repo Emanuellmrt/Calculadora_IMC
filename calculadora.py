@@ -110,5 +110,6 @@ if st.button("Calcular IMC"):
 
 # Botão de Reset para reiniciar o formulário
 if st.button("Reiniciar"):
-    st.experimental_rerun()
+    st.session_state['calculado'] = False
+
 
