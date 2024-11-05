@@ -87,8 +87,12 @@ if st.button("Calcular IMC"):
             'Cor': cores
         })
 
-        # Linha para o IMC do usuário
-        data = data.append({'Categoria': 'Seu IMC', 'Limite': imc, 'Cor': cor}, ignore_index=True)
+        # Cria um novo DataFrame com a linha adicional
+        nova_linha = pd.DataFrame([{'Categoria': 'Seu IMC', 'Limite': imc, 'Cor': cor}])
+
+        # Usa pd.concat() para adicionar a nova linha ao DataFrame original
+        data = pd.concat([data, nova_linha], ignore_index=True)
+
 
         # Gráfico com Altair
         chart = alt.Chart(data).mark_bar().encode(
