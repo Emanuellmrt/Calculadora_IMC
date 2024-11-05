@@ -107,8 +107,3 @@ if st.button("Calcular IMC"):
         st.altair_chart(chart, use_container_width=True)
     else:
         st.write("Por favor, insira uma altura válida.")
-
-# Botão de Reset para reiniciar o formulário
-if st.button("Reiniciar"):
-    st.experimental_rerun()
-
