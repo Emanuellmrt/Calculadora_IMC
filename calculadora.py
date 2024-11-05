@@ -109,5 +109,6 @@ if st.button("Calcular IMC"):
         st.write("Por favor, insira uma altura válida.")
 
 # Botão de Reset para reiniciar o formulário
-if st.button("Reset"):
+if st.button("Reiniciar"):
     st.experimental_rerun()
+
