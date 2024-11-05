@@ -107,3 +107,16 @@ if st.button("Calcular IMC"):
         st.altair_chart(chart, use_container_width=True)
     else:
         st.write("Por favor, insira uma altura válida.")
+
+# Botão de Reset para reiniciar o formulário
+if 'calculado' not in st.session_state:
+    st.session_state['calculado'] = False
+
+if st.button("Calcular IMC"):
+    # Coloque a lógica de cálculo aqui
+    st.session_state['calculado'] = True
+
+if st.session_state['calculado']:
+    st.write("IMC foi calculado!")
+
+
