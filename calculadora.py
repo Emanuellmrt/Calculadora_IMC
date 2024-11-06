@@ -2,47 +2,30 @@ import streamlit as st
 import altair as alt
 import pandas as pd
 
-# CSS Customizado para estilo do site
+# CSS Customizado
 st.markdown(
     """
     <style>
-    .title {
-        font-size: 36px;
-        font-weight: bold;
-        color: #4CAF50;
-        text-align: center;
-    }
-    .result {
-        font-size: 20px;
-        margin: 10px;
-    }
-    .stButton>button {
-        background-color: #4CAF50;
-        color: white;
-        border-radius: 5px;
-    }
+    .title { font-size: 36px; font-weight: bold; color: #4CAF50; text-align: center; }
+    .result { font-size: 20px; margin: 10px; }
+    .stButton>button { background-color: #4CAF50; color: white; border-radius: 5px; }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# Inicializa variáveis no session_state
-if 'peso' not in st.session_state:
-    st.session_state['peso'] = 0.0
-if 'altura' not in st.session_state:
-    st.session_state['altura'] = 0.0
-if 'nome' not in st.session_state:
-    st.session_state['nome'] = ""
-if 'idade' not in st.session_state:
-    st.session_state['idade'] = 0
-if 'genero' not in st.session_state:
-    st.session_state['genero'] = "Masculino"
+# Inicializa session_state para os inputs
+for campo in ['nome', 'idade', 'genero', 'peso', 'altura']:
+    if campo not in st.session_state:
+        st.session_state[campo] = 0.0 if campo in ['peso', 'altura'] else ""
 
-# Funções
-def calcular_imc(peso, altura):
+# Funções para cálculos e recomendações
+def calcular_imc(peso: float, altura: float) -> float:
+    """Calcula o IMC."""
     return peso / (altura ** 2)
 
-def classificar_imc(imc):
+def classificar_imc(imc: float) -> tuple:
+    """Classifica o IMC em categorias de saúde."""
     if imc < 18.5:
         return "Abaixo do peso 🟦", "blue"
     elif 18.5 <= imc < 24.9:
@@ -56,64 +39,66 @@ def classificar_imc(imc):
     else:
         return "Obesidade grau III 🟪", "purple"
 
-def peso_ideal(altura):
-    return (18.5 * altura ** 2, 24.9 * altura ** 2)
+def peso_ideal(altura: float) -> tuple:
+    """Calcula o intervalo de peso ideal para a altura fornecida."""
+    return 18.5 * altura ** 2, 24.9 * altura ** 2
 
-# Título
+# Cabeçalho
 st.markdown("<h1 class='title'>Calculadora de IMC Personalizada 🏋️</h1>", unsafe_allow_html=True)
-st.write("Insira seus dados, peso e altura para calcular seu IMC e obter recomendações de saúde.")
 
-# Entradas de Dados Pessoais
-st.session_state['nome'] = st.text_input("Nome", value=st.session_state['nome'])
-st.session_state['idade'] = st.number_input("Idade", min_value=0, max_value=120, step=1, value=st.session_state['idade'])
-st.session_state['genero'] = st.selectbox("Gênero", ["Masculino", "Feminino", "Outro"], index=["Masculino", "Feminino", "Outro"].index(st.session_state['genero']))
+# Formulário para entrada de dados pessoais
+with st.form("dados_pessoais"):
+    st.session_state['nome'] = st.text_input("Nome", value=st.session_state['nome'])
+    st.session_state['idade'] = st.number_input("Idade", min_value=0, max_value=120, step=1, value=st.session_state['idade'])
+    st.session_state['genero'] = st.selectbox("Gênero", ["Masculino", "Feminino", "Outro"], index=["Masculino", "Feminino", "Outro"].index(st.session_state['genero']))
 
-# Entradas do Usuário para Peso e Altura
-col1, col2 = st.columns(2)
-with col1:
-    st.session_state['peso'] = st.number_input("Peso (kg)", min_value=0.0, format="%.2f", value=st.session_state['peso'])
-with col2:
-    st.session_state['altura'] = st.number_input("Altura (m)", min_value=0.0, format="%.2f", value=st.session_state['altura'])
+    col1, col2 = st.columns(2)
+    with col1:
+        st.session_state['peso'] = st.number_input("Peso (kg)", min_value=0.0, format="%.2f", value=st.session_state['peso'])
+    with col2:
+        st.session_state['altura'] = st.number_input("Altura (m)", min_value=0.0, format="%.2f", value=st.session_state['altura'])
 
-# Botão de Cálculo e Resultados
-if st.button("Calcular IMC"):
-    if st.session_state['altura'] > 0:
-        imc = calcular_imc(st.session_state['peso'], st.session_state['altura'])
+    # Botões de submissão e reset do formulário
+    calcular = st.form_submit_button("Calcular IMC")
+    st.form_reset_button("Reiniciar")
+
+# Processamento de dados e exibição de resultados
+if calcular:
+    altura = st.session_state['altura']
+    peso = st.session_state['peso']
+    if altura > 0:
+        imc = calcular_imc(peso, altura)
         classificacao, cor = classificar_imc(imc)
-        peso_min, peso_max = peso_ideal(st.session_state['altura'])
+        peso_min, peso_max = peso_ideal(altura)
 
-        # Exibe informações pessoais e resultados do IMC
-        st.markdown(f"<p class='result'>**Nome:** {st.session_state['nome']}</p>", unsafe_allow_html=True)
-        st.markdown(f"<p class='result'>**Idade:** {st.session_state['idade']} anos</p>", unsafe_allow_html=True)
-        st.markdown(f"<p class='result'>**Gênero:** {st.session_state['genero']}</p>", unsafe_allow_html=True)
+        # Exibição dos dados do usuário e resultados
+        st.write(f"**Nome:** {st.session_state['nome']}, **Idade:** {st.session_state['idade']} anos, **Gênero:** {st.session_state['genero']}")
         st.markdown(f"<p class='result'>**Seu IMC é:** {imc:.2f}</p>", unsafe_allow_html=True)
         st.markdown(f"<p class='result' style='color:{cor}'>Classificação: {classificacao}</p>", unsafe_allow_html=True)
         st.write(f"Faixa de peso ideal para sua altura: **{peso_min:.2f} kg** a **{peso_max:.2f} kg**")
 
-        # Adiciona recomendações
+        # Recomendações personalizadas
         if classificacao == "Peso normal 🟩":
             st.success("Parabéns! Mantenha seu estilo de vida saudável.")
         else:
-            st.warning("Considere fazer ajustes na dieta e exercícios para atingir o peso ideal.")
+            st.warning("Considere ajustes na dieta e exercício. Consulte um profissional de saúde para uma orientação personalizada.")
 
-        # Dados para o gráfico Altair
+        # Gráfico de distribuição do IMC com destaque
         categorias = ["Abaixo do Peso", "Peso Normal", "Sobrepeso", "Obesidade I", "Obesidade II", "Obesidade III"]
         limites = [18.5, 24.9, 29.9, 34.9, 39.9, 45]
         cores = ["blue", "green", "orange", "red", "darkred", "purple"]
 
-        # Cria o DataFrame inicial
         data = pd.DataFrame({
             'Categoria': categorias,
             'Limite': limites,
             'Cor': cores
         })
 
-        # Adiciona o valor do IMC do usuário
-        nova_linha = pd.DataFrame([{'Categoria': 'Seu IMC', 'Limite': imc, 'Cor': cor}])
-        data = pd.concat([data, nova_linha], ignore_index=True)
+        # Adiciona o IMC do usuário para destacar no gráfico
+        data = pd.concat([data, pd.DataFrame([{'Categoria': 'Seu IMC', 'Limite': imc, 'Cor': cor}])], ignore_index=True)
 
         # Gráfico com Altair
-        chart = alt.Chart(data).mark_bar().encode(
+        chart = alt.Chart(data).mark_bar(size=40).encode(
             x=alt.X('Limite:Q', title='IMC'),
             y=alt.Y('Categoria:N', sort='-x', title='Categoria'),
             color=alt.Color('Cor:N', scale=None),
@@ -124,13 +109,4 @@ if st.button("Calcular IMC"):
 
         st.altair_chart(chart, use_container_width=True)
     else:
-        st.write("Por favor, insira uma altura válida.")
-
-# Botão de Reset para reiniciar o formulário
-if st.button("Reiniciar"):
-    # Zera os valores dos campos no session_state
-    st.session_state['peso'] = 0.0
-    st.session_state['altura'] = 0.0
-    st.session_state['nome'] = ""
-    st.session_state['idade'] = 0
-    st.session_state['genero'] = "Masculino"
+        st.error("Por favor, insira uma altura válida.")
