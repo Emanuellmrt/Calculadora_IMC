@@ -14,11 +14,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Inicializa session_state para os inputs
-for campo in ['nome', 'idade', 'genero', 'peso', 'altura']:
-    if campo not in st.session_state:
-        st.session_state[campo] = 0.0 if campo in ['peso', 'altura'] else ""
-
 # Funções para cálculos e recomendações
 def calcular_imc(peso: float, altura: float) -> float:
     """Calcula o IMC."""
@@ -46,6 +41,18 @@ def peso_ideal(altura: float) -> tuple:
 # Cabeçalho
 st.markdown("<h1 class='title'>Calculadora de IMC Personalizada 🏋️</h1>", unsafe_allow_html=True)
 
+# Inicializa as variáveis no session_state se não existirem
+if 'nome' not in st.session_state:
+    st.session_state['nome'] = ''
+if 'idade' not in st.session_state:
+    st.session_state['idade'] = 0
+if 'genero' not in st.session_state:
+    st.session_state['genero'] = 'Masculino'
+if 'peso' not in st.session_state:
+    st.session_state['peso'] = 0.0
+if 'altura' not in st.session_state:
+    st.session_state['altura'] = 0.0
+
 # Formulário para entrada de dados pessoais
 with st.form("dados_pessoais"):
     st.session_state['nome'] = st.text_input("Nome", value=st.session_state['nome'])
@@ -58,18 +65,15 @@ with st.form("dados_pessoais"):
     with col2:
         st.session_state['altura'] = st.number_input("Altura (m)", min_value=0.0, format="%.2f", value=st.session_state['altura'])
 
-    # Botões de submissão e reset do formulário
+    # Botão de submissão do formulário
     calcular = st.form_submit_button("Calcular IMC")
-    st.form_reset_button("Reiniciar")
 
 # Processamento de dados e exibição de resultados
 if calcular:
-    altura = st.session_state['altura']
-    peso = st.session_state['peso']
-    if altura > 0:
-        imc = calcular_imc(peso, altura)
+    if st.session_state['altura'] > 0:
+        imc = calcular_imc(st.session_state['peso'], st.session_state['altura'])
         classificacao, cor = classificar_imc(imc)
-        peso_min, peso_max = peso_ideal(altura)
+        peso_min, peso_max = peso_ideal(st.session_state['altura'])
 
         # Exibição dos dados do usuário e resultados
         st.write(f"**Nome:** {st.session_state['nome']}, **Idade:** {st.session_state['idade']} anos, **Gênero:** {st.session_state['genero']}")
