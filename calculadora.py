@@ -114,3 +114,13 @@ if calcular:
         st.altair_chart(chart, use_container_width=True)
     else:
         st.error("Por favor, insira uma altura válida.")
+
+# Botão de Reset
+if st.button("Reiniciar"):
+    # Resetando as variáveis no session_state
+    st.session_state['nome'] = ''
+    st.session_state['idade'] = 0
+    st.session_state['genero'] = 'Masculino'
+    st.session_state['peso'] = 0.0
+    st.session_state['altura'] = 0.0
+    st.experimental_rerun()
