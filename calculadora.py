@@ -54,10 +54,19 @@ if 'altura' not in st.session_state:
     st.session_state['altura'] = 0.0
 if 'resultado' not in st.session_state:
     st.session_state['resultado'] = None
+if 'reset' not in st.session_state:
+    st.session_state['reset'] = False
 
 # Título
 st.markdown("<h1 class='title'>Calculadora de IMC Melhorada 🏋️</h1>", unsafe_allow_html=True)
 st.write("Insira seu peso e altura para calcular seu IMC e obter recomendações de saúde.")
+
+# Condicional para resetar campos
+if st.session_state['reset']:
+    st.session_state['peso'] = 0.0
+    st.session_state['altura'] = 0.0
+    st.session_state['resultado'] = None
+    st.session_state['reset'] = False
 
 # Entradas do Usuário em Colunas
 col1, col2 = st.columns(2)
@@ -115,7 +124,4 @@ if st.button("Calcular IMC"):
 
 # Botão de Reset para reiniciar o formulário
 if st.button("Reiniciar"):
-    st.session_state['peso'] = 0.0
-    st.session_state['altura'] = 0.0
-    st.session_state['resultado'] = None
-    st.experimental_rerun()
+    st.session_state['reset'] = True
