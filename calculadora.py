@@ -115,12 +115,13 @@ if calcular:
     else:
         st.error("Por favor, insira uma altura válida.")
 
-# Botão de Reset
+# Botão de Reset (agora com a abordagem de "limpeza" do estado)
 if st.button("Reiniciar"):
-    # Resetando as variáveis no session_state
+    # Resetando as variáveis no session_state manualmente
     st.session_state['nome'] = ''
     st.session_state['idade'] = 0
     st.session_state['genero'] = 'Masculino'
     st.session_state['peso'] = 0.0
     st.session_state['altura'] = 0.0
-    st.experimental_rerun()
+    # Não usamos o st.experimental_rerun() diretamente para evitar conflitos
+    st.write("Os dados foram reiniciados. Por favor, insira novos valores.")
