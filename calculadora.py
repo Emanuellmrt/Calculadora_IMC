@@ -47,23 +47,31 @@ def classificar_imc(imc):
 def peso_ideal(altura):
     return (18.5 * altura ** 2, 24.9 * altura ** 2)
 
-# Layout
+# Inicializar variáveis no st.session_state
+if 'peso' not in st.session_state:
+    st.session_state['peso'] = 0.0
+if 'altura' not in st.session_state:
+    st.session_state['altura'] = 0.0
+if 'resultado' not in st.session_state:
+    st.session_state['resultado'] = None
+
+# Título
 st.markdown("<h1 class='title'>Calculadora de IMC Melhorada 🏋️</h1>", unsafe_allow_html=True)
 st.write("Insira seu peso e altura para calcular seu IMC e obter recomendações de saúde.")
 
 # Entradas do Usuário em Colunas
 col1, col2 = st.columns(2)
 with col1:
-    peso = st.number_input("Peso (kg)", min_value=0.0, format="%.2f")
+    st.session_state['peso'] = st.number_input("Peso (kg)", min_value=0.0, format="%.2f", value=st.session_state['peso'])
 with col2:
-    altura = st.number_input("Altura (m)", min_value=0.0, format="%.2f")
+    st.session_state['altura'] = st.number_input("Altura (m)", min_value=0.0, format="%.2f", value=st.session_state['altura'])
 
 # Botão de Cálculo e Resultados
 if st.button("Calcular IMC"):
-    if altura > 0:
-        imc = calcular_imc(peso, altura)
+    if st.session_state['altura'] > 0:
+        imc = calcular_imc(st.session_state['peso'], st.session_state['altura'])
         classificacao, cor = classificar_imc(imc)
-        peso_min, peso_max = peso_ideal(altura)
+        peso_min, peso_max = peso_ideal(st.session_state['altura'])
 
         # Exibe resultados com estilos e dicas
         st.markdown(f"<p class='result'>**Seu IMC é:** {imc:.2f}</p>", unsafe_allow_html=True)
@@ -87,12 +95,9 @@ if st.button("Calcular IMC"):
             'Cor': cores
         })
 
-        # Cria um novo DataFrame com a linha adicional
+        # Cria um novo DataFrame com a linha adicional para o IMC do usuário
         nova_linha = pd.DataFrame([{'Categoria': 'Seu IMC', 'Limite': imc, 'Cor': cor}])
-
-        # Usa pd.concat() para adicionar a nova linha ao DataFrame original
         data = pd.concat([data, nova_linha], ignore_index=True)
-
 
         # Gráfico com Altair
         chart = alt.Chart(data).mark_bar().encode(
@@ -114,5 +119,3 @@ if st.button("Reiniciar"):
     st.session_state['altura'] = 0.0
     st.session_state['resultado'] = None
     st.experimental_rerun()
-
-
