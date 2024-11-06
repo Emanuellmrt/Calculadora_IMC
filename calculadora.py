@@ -71,10 +71,10 @@ if st.button("Calcular IMC"):
         peso_min, peso_max = peso_ideal(altura)
 
         # Exibe informações pessoais e resultados do IMC
-        st.markdown(f"<p class='result'>**Nome:** {nome}</p>", unsafe_allow_html=True)
-        st.markdown(f"<p class='result'>**Idade:** {idade} anos</p>", unsafe_allow_html=True)
-        st.markdown(f"<p class='result'>**Gênero:** {genero}</p>", unsafe_allow_html=True)
-        st.markdown(f"<p class='result'>**Seu IMC é:** {imc:.2f}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p class='result'>Nome: {nome}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p class='result'>Idade: {idade} anos</p>", unsafe_allow_html=True)
+        st.markdown(f"<p class='result'>Gênero: {genero}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p class='result'>Seu IMC é: {imc:.2f}</p>", unsafe_allow_html=True)
         st.markdown(f"<p class='result' style='color:{cor}'>Classificação: {classificacao}</p>", unsafe_allow_html=True)
         st.write(f"Faixa de peso ideal para sua altura: **{peso_min:.2f} kg** a **{peso_max:.2f} kg**")
 
